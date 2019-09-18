@@ -1,0 +1,10 @@
+---
+- name: Copy InfluxData Rpm file to server
+  copy:
+     src: influxdb-1.5.4.x86_64.rpm
+     dest: /opt/soft
+
+- name: Install influxdb
+  yum:
+    name:  "/opt/soft/influxdb-1.5.4.x86_64.rpm"
+    state: present

@@ -1,0 +1,68 @@
+[meta]
+  # Where the metadata/raft database is stored
+  dir = "{{ influxdb_meta_dir }}"
+
+[data]
+  # The directory where the TSM storage engine stores TSM files.
+  dir = "{{ influxdb_data_dir }}"
+
+  # The directory where the TSM storage engine stores WAL files.
+  wal-dir = "{{ influxdb_data_wal_dir }}"
+
+###
+### [http]
+###
+### Controls how the HTTP endpoints are configured. These are the primary
+### mechanism for getting data into and out of InfluxDB.
+###
+
+[http]
+  # Determines whether HTTP endpoint is enabled.
+  enabled = {{ influxdb_http_enabled|default(true)|bool|lower }}
+
+  # The bind address used by the HTTP service.
+  bind-address = "{{ influxdb_http_bind_address|default(':8086') }}"
+
+  # Determines whether HTTP authentication is enabled.
+  auth-enabled = {{ influxdb_http_auth_enabled|default(false)|bool|lower }}
+
+  # The default realm sent back when issuing a basic auth challenge.
+  realm = "{{ influxdb_http_realm|default('InfluxDB') }}"
+
+  # Determines whether HTTP request logging is enable.d
+  log-enabled = {{ influxdb_http_log_enabled|default(true)|bool|lower }}
+
+  # Determines whether detailed write logging is enabled.
+  write-tracing = {{ influxdb_http_write_tracing|default(false)|bool|lower }}
+
+  # Determines whether the pprof endpoint is enabled.  This endpoint is used for
+  # troubleshooting and monitoring.
+  pprof-enabled = {{ influxdb_http_pprof_enabled|default(false)|bool|lower }}
+
+  # Determines whether HTTPS is enabled.
+  https-enabled = {{ influxdb_http_https_enabled|default(false)|bool|lower }}
+
+  # The SSL certificate to use when HTTPS is enabled.
+  https-certificate = "{{ influxdb_http_https_certificate }}"
+
+  # Use a separate private key location.
+  # https-private-key = ""
+{% if influxdb_http_https_private_key|default(false) != '' %}
+  https-private-key = "{{ influxdb_http_https_private_key }}"
+{% endif %}
+
+  # The JWT auth shared secret to validate requests using JSON web tokens.
+  # shared-sercret = ""
+
+  # The default chunk size for result sets that should be chunked.
+  max-row-limit = {{ influxdb_http_max_row_limit }}
+
+  # The maximum number of HTTP connections that may be open at once.  New connections that
+  # would exceed this limit are dropped.  Setting this value to 0 disables the limit.
+  # max-connection-limit = 0
+
+  # Enable http service over unix domain socket
+  # unix-socket-enabled = false
+
+  # The path of the unix domain socket.
+  # bind-socket = "/var/run/influxdb.sock"

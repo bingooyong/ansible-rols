@@ -1,0 +1,63 @@
+---
+- name: Create directory /opt/soft
+  file: path=/opt/soft state=directory owner=root group=root
+
+- name: Install influxdb
+  include: "install-{{ ansible_os_family|lower }}.yml"
+
+- name: Get influxdb user info
+  user: name=influxdb
+  register: info
+
+- name: Stop influxdb before migrating home dir
+  service: name=influxdb state=stopped
+  when: influxdb_home_dir != info.home
+
+- name: Migrate influxdb home dir to desired location
+  user:
+    name:  "{{ influxdb_user }}"
+    home:  "{{ influxdb_home_dir }}"
+    move_home: yes
+  when: influxdb_home_dir != info.home
+
+- name: Create influxdb config file
+  template:
+    src:   influxdb.conf.j2
+    dest:  /etc/influxdb/influxdb.conf
+    owner: root
+    group: root
+    mode:  0644
+
+- name: Create influxdb service startup config file
+  template:
+    src:   etc.default.influxdb.j2
+    dest:  /etc/default/influxdb
+    owner: root
+    group: root
+    mode:  0644
+
+- name: Create influxdb logrotate config
+  template:
+    src:   influxdb.logrotate.j2
+    dest:  /etc/logrotate.d/influxdb
+    owner: root
+    group: root
+    mode:  0644
+
+- name: Start influxdb
+  service: name=influxdb enabled=yes state=started
+
+- name: Give the InfluxDB service a few seconds to fully start
+  pause: seconds=3
+
+- name: Create sample database
+  command: influx -port {{ influxdb_http_bind_port }} -execute 'CREATE DATABASE {{ item }}'
+  with_items: 
+    - telegraf
+  tags:
+    - init_database
+
+- name: Create sample database
+  command: influx -port {{ influxdb_http_bind_port }} -execute 'CREATE RETENTION POLICY "oneweek" ON "telegraf" DURATION 7d REPLICATION 1 DEFAULT;' -database=telegraf
+  tags:
+    - init_database

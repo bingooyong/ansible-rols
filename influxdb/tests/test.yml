@@ -1,0 +1,7 @@
+---
+- hosts: influxdb
+  roles:
+      - influxdb
+  vars:
+      influxdb_http_bind_port: 10014
+      influxdb_user: footstone

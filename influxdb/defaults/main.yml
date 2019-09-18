@@ -1,0 +1,40 @@
+---
+influxdb_user:  influxdb
+influxdb_group: "{{ influxdb_user }}"
+
+#################
+## Configuration
+##
+## For further information on configuration settings, see
+##    https://github.com/influxdata/influxdb/blob/master/etc/config.sample.toml
+
+influxdb_opts: []
+influxdb_log_dir:  /var/log/influxdb
+influxdb_conf_dir: /etc/influxdb
+influxdb_pid_dir:  /var/run/influxdb
+influxdb_home_dir: /var/lib/influxdb
+influxdb_open_file_limit: 65536
+
+### [meta]
+influxdb_meta_dir: "{{ influxdb_home_dir }}/meta"
+influxdb_meta_retention_autocreate: true
+influxdb_meta_logging_enabled: true
+
+### [data]
+influxdb_data_dir: "{{ influxdb_home_dir }}/data"
+influxdb_data_wal_dir: "{{ influxdb_home_dir }}/wal"
+influxdb_data_trace_logging_enabled: false
+
+### [http]
+influxdb_http_enabled: true
+influxdb_http_bind_port: 8086
+influxdb_http_bind_address: ":{{ influxdb_http_bind_port }}"
+influxdb_http_auth_enabled: false
+influxdb_http_log_enabled: true
+influxdb_http_write_tracing: false
+influxdb_http_pprof_enabled: false
+influxdb_http_https_enabled: false
+influxdb_http_https_certificate: "/etc/ssl/influxdb.pem"
+influxdb_http_https_private_key: ''
+influxdb_http_max_row_limit: 10000
+influxdb_http_realm: 'InfluxDB'
